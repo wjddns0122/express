@@ -11,7 +11,7 @@ app.use(express.static('./3.FRONTBACK/public'));
 // 이 미들웨어는 ? 사용자로부터 전달받은 위 MIME 타입을 찾아서 req.body 에 담아준다.
 app.use(express.urlencoded({extended: false}));     // 확장 문법 안씀. 기본 문법만 쓸거임
 
-app.post('/login', (res, req) => {
+app.post('/login', (req, res) => {
     const id = req.body.id;
     const pw = req.body.pw;
     
