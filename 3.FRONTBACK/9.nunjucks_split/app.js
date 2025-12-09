@@ -1,0 +1,26 @@
+const express = require('express');
+const nunjucks = require('nunjucks');
+
+const app = express();
+
+const PORT = 3100;
+
+app.set('view engine', 'njk')   // Html 로 하면 이거 지우고
+
+nunjucks.configure('views', {
+    autoescap: true,    // XSS 자동 대응하기 위한 설정
+    express: app,
+    watch: true     // 개발용으로, 템플릿 파일의 변경을 알아서 감지해줌
+});
+
+app.get('/', (req, res) => {
+    res.render('main', { title: '메인 페이지', content: 'NJK 서버사이드 렌더링을 합니다.' });        // 여기서 Index.html로 바꿔준다
+});
+
+app.get('/user', (req, res) => {
+    res.render('user', { title: '유저 페이지', content: '각종 사용자 정보를 렌더링 합니다.' });        // 여기서 Index.html로 바꿔준다
+});
+
+app.listen(PORT, () => {
+    console.log('서버 레디');
+});
