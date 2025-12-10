@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="number" id="postId">
+    <button id="loadButton">불러오기</button>
+    <button id="deleteButton">삭제하기</button>
+    <div id="result"></div>
+    
+    <script>
+        const loadButton = document.getElementById('loadButton');
+        const deleteButton = document.getElementById('deleteButton');
+
+        loadButton.addEventListener('click', async () => {
+            const readNumber = document.getElementById('postId').value;
+            const result = document.getElementById('result');
+
+            if (!readNumber) {
+                result.textContent = '번호를 입력하세요.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/posts/${readNumber}`);
+                if (!response.ok) throw new Error('데이터를 불러오지 못했습니다.');
+                const data = await response.json(); 
+
+                result.innerHTML = 
+                `<p><strong>타이틀</strong>: ${data.title}</p>
+                <p><strong>바디</strong>: ${data.body}</p>`;
+
+            } catch (error) {
+                console.error(error);
+                result.textContent = '불러오는데 실패했습니다.';
+            }
+        })
+        
+
+        deleteButton.addEventListener('click', async () => {
+            const inputValue = document.getElementById('postId').value;
+            const response = await fetch(`/api/posts/${inputValue}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            const result = document.getElementById('result');
+            result.innerHTML = JSON.stringify(data);
+        })
+    </script>
+</body>
+</html>
