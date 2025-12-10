@@ -4,51 +4,200 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        #center {
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+        }
+        h4 {
+            margin: 0px;
+        }
+    </style>
 </head>
 <body>
-    <input type="number" id="postId">
-    <button id="loadButton">불러오기</button>
-    <button id="deleteButton">삭제하기</button>
-    <div id="result"></div>
+    <h1>CRUD TEST</h1>
     
+    <h3>1. GET ALL (전체 조회)</h3>
+    <button id="getAllBtn">Get All</button>
+
+    <h3>2. Get One (단건 조회)</h3>
+    <div id="center">
+        <h4>ID: </h4>
+        <input type="number" id="countValue" placeholder="예: 1">
+        <button id="getOneBtn">Get One</button>
+    </div>
+
+    <h3>3. Create (생성)</h3>
+    <div id="center">
+        <h4>Title: </h4>
+        <input type="text" id="createTitle" placeholder="제목 입력">
+    </div>
+    <div id="center">
+        <h4>Body: </h4>
+        <input type="text" id="createBody" placeholder="내용 입력">
+    </div>
+    <button id="createBtn">Create</button>
+
+    <h3>4. Update (수정 - PUT)</h3>
+    <div id="center">
+        <h4>ID: </h4>
+        <input type="text" id="updateId" placeholder="수정할 ID (예: 1)">
+    </div>
+    <div id="center">
+        <h4>Title: </h4>
+        <input type="text" id="updateTitle" placeholder="새 제목">
+    </div>
+    <div id="center">
+        <h4>Body: </h4>
+        <input type="text" id="updateBody" placeholder="새 내용">
+    </div>
+    <button id="updateBtn">Update</button>
+
+    <h3>5. Delete (삭제)</h3>
+    <div id="center">
+        <h4>ID: </h4>
+        <input type="number" id="deleteId" placeholder="삭제할 ID (예: 1)">
+        <button id="deleteBtn">Delete</button>
+    </div>
+
+    <h3>Response / Output</h3>
+    <div id="result"></div>
+
     <script>
-        const loadButton = document.getElementById('loadButton');
-        const deleteButton = document.getElementById('deleteButton');
+        const getAllBtn = document.getElementById('getAllBtn');
+        const getOneBtn = document.getElementById('getOneBtn');
+        const createBtn = document.getElementById('createBtn');
+        const updateBtn = document.getElementById('updateBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const result = document.getElementById('result');
 
-        loadButton.addEventListener('click', async () => {
-            const readNumber = document.getElementById('postId').value;
-            const result = document.getElementById('result');
+        // GET ALL - 전체 조회
+        getAllBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/posts');
+                const data = await response.json();
+                let html = '';
+                for (const post of data) {
+                    html += `
+                        <div>
+                            <p><strong>ID:</strong> ${post.id}</p>
+                            <p><strong>제목:</strong> ${post.title}</p>
+                            <p><strong>내용:</strong> ${post.body}</p>
+                        </div>
+                    `;
+                }
+                result.innerHTML = html;
+            } catch (error) {
+                console.error(error);
+                result.innerHTML = `데이터를 불러오는데 실패했습니다. ${error}`;
+            }
+        });
 
-            if (!readNumber) {
-                result.textContent = '번호를 입력하세요.';
+        // GET ONE - 단건 조회
+        getOneBtn.addEventListener('click', async () => {
+            const id = document.getElementById('countValue').value;
+            if (!id) {
+                alert('숫자를 입력해주세요!');
+                return;
+            }
+            try {
+                const response = await fetch(`/api/posts/${id}`);
+                const data = await response.json();
+                let html = `
+                    <div>
+                        <p><strong>ID:</strong> ${data.id}</p>
+                        <p><strong>제목:</strong> ${data.title}</p>
+                        <p><strong>내용:</strong> ${data.body}</p>
+                    </div>
+                `;
+                result.innerHTML = html;
+            } catch (error) {
+                console.error(error);
+                result.innerHTML = `숫자를 정확히 입력해주세요!. ${error}`;
+            }
+        });
+
+        // CREATE - 생성
+        createBtn.addEventListener('click', async () => {
+            const title = document.getElementById('createTitle').value;
+            const body = document.getElementById('createBody').value;
+
+            try {
+                const response = await fetch('/api/posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title, body }),
+                });
+
+                const data = await response.json();
+                result.innerHTML = `
+                    <p><strong>새로운 글이 생성되었습니다.</strong></p>
+                    <p><strong>ID:</strong> ${data.id}</p>
+                    <p><strong>제목:</strong> ${data.title}</p>
+                    <p><strong>내용:</strong> ${data.body}</p>
+                `;
+            } catch (error) {
+                console.error(error);
+                result.innerHTML = `생성에 실패했습니다. ${error}`;
+            }
+        });
+
+        // UPDATE - 수정
+        updateBtn.addEventListener('click', async () => {
+            const id = document.getElementById('updateId').value;
+            const title = document.getElementById('updateTitle').value;
+            const body = document.getElementById('updateBody').value;
+
+            if (!id || !title || !body) {
+                alert('ID, 제목, 내용 모두 입력해야 합니다.');
                 return;
             }
 
             try {
-                const response = await fetch(`/api/posts/${readNumber}`);
-                if (!response.ok) throw new Error('데이터를 불러오지 못했습니다.');
-                const data = await response.json(); 
+                const response = await fetch(`/api/posts/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title, body }),
+                });
 
-                result.innerHTML = 
-                `<p><strong>타이틀</strong>: ${data.title}</p>
-                <p><strong>바디</strong>: ${data.body}</p>`;
-
+                const data = await response.json();
+                result.innerHTML = `
+                    <p><strong>수정된 글:</strong></p>
+                    <p><strong>ID:</strong> ${data.id}</p>
+                    <p><strong>제목:</strong> ${data.title}</p>
+                    <p><strong>내용:</strong> ${data.body}</p>
+                `;
             } catch (error) {
                 console.error(error);
-                result.textContent = '불러오는데 실패했습니다.';
+                result.innerHTML = `수정에 실패했습니다. ${error}`;
             }
-        })
-        
+        });
 
-        deleteButton.addEventListener('click', async () => {
-            const inputValue = document.getElementById('postId').value;
-            const response = await fetch(`/api/posts/${inputValue}`, {
-                method: 'DELETE'
-            });
-            const data = await response.json();
-            const result = document.getElementById('result');
-            result.innerHTML = JSON.stringify(data);
-        })
+        // DELETE - 삭제
+        deleteBtn.addEventListener('click', async () => {
+            const id = document.getElementById('deleteId').value;
+
+            if (!id) {
+                alert('삭제할 ID를 입력하세요.');
+                return;
+            }
+
+            try {
+                await fetch(`/api/posts/${id}`, {
+                    method: 'DELETE',
+                });
+
+                result.innerHTML = `<p><strong>글이 삭제되었습니다. ID: ${id}</strong></p>`;
+            } catch (error) {
+                console.error(error);
+                result.innerHTML = `삭제에 실패했습니다. ${error}`;
+            }
+        });
     </script>
 </body>
 </html>
