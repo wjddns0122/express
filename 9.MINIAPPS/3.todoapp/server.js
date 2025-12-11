@@ -16,11 +16,13 @@ app.use(morgan('dev'));
 
 
 // 라우트 설계 --->
+// GET 방식으로 전체 리스트 조회
 app.get('/api/todo', (req, res) => {
     console.log('todo 달라고 요청함');
     res.json(todos);
 });
 
+// POST 방식으로 리스트 생성
 app.post('/api/todo', (req, res) => {
     console.log('todo 생성해달라고 요청함');
     console.log(`요청의바디: ${JSON.stringify(req.body)}`);
@@ -31,21 +33,59 @@ app.post('/api/todo', (req, res) => {
     console.log(newTodo);
     todos.push(newTodo);
 
-    res.json({"status":"ok"}); // 응답의 룰은 내가 정하면 됨.. 아무것도 안줄건지, id만 줄건지, 전체 추가된 항목 내용을 다 줄건지, 또는 상태 코드만 줄건지... 정말 회사마다/제품마다 캐바캐임;;;
+    res.json({"id": idCounter - 1,"status":"성공적으로 생성 되었습니다!"}); // 응답의 룰은 내가 정하면 됨.. 아무것도 안줄건지, id만 줄건지, 전체 추가된 항목 내용을 다 줄건지, 또는 상태 코드만 줄건지... 정말 회사마다/제품마다 캐바캐임;;;
 });
 
-app.delete('/api/todo', (req, res) => {  // 입력 인자를 ? 쿼리파라미터로 받을지 URL파라미터를 받을지 (잘 모르면 지금 케이스에서는 후자로 :id 로 처리)
+// DELETE 방식으로 리스트 제거
+app.delete('/api/todo/:id', (req, res) => {  // 입력 인자를 ? 쿼리파라미터로 받을지 URL파라미터를 받을지 (잘 모르면 지금 케이스에서는 후자로 :id 로 처리)
     console.log('todo 삭제해달라고 요청함');
     // id를 받아서, 그 id를 가진 항목을 삭제한다.
+    const id = parseInt(req.params.id);
     // todos.filter를 통해서 비교해본다.
+    const newTodo = todos.filter(item => item.id !== id)
+    todos = newTodo;
 
     res.json({ success: true });  // 다양한 양식일뿐, 결론적으로는 한 타입으로 통일..
 });
 
-app.put('/api/todo', (req, res) => { // 입력 인자... 위처럼 URL 파라미터로 받으면 :id
-    console.log('todo 수정해달라고 요청함');
-    // id를 찾아서, completed 를 toggle (complated 에 true/false를 변경)
+// PUT 방식으로 리스트 수정
+app.put('/api/todo/:id', (req, res) => {
+    // 1. URL 파라미터에서 id를 가져옵니다. 
+    const id = parseInt(req.params.id);
+
+    console.log(`${id}번 todo 수정 요청 들어옴`);
+
+    // 2. id에 해당하는 아이템을 찾습니다.
+    const todoItem = todos.find((item) => item.id === id);
+
+    if (todoItem) {
+        // 3. 찾았으면 값을 반대로 뒤집습니다 (Toggle)
+        todoItem.completed = !todoItem.completed; 
+
+        if (req.body.todo) {
+            todoItem.todo = req.body.todo;
+        }
+        
+        // 4. 수정된 내용을 응답으로 보내줍니다.
+        res.json(todoItem);
+    } else {
+        // 5. 만약 이상한 ID를 보내서 못 찾았을 경우 처리
+        res.status(404).json({ message: "해당하는 ID의 할 일을 찾을 수 없습니다." });
+    }
 });
+
+// GET 방식으로 리스트 찾기
+app.get('/api/todo/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+
+    const todoItem = todos.find((item) => item.id === id);
+
+    if(!todoItem) {
+        return res.status(404).json({status: '원하는 항목이 없습니다!'});
+    } 
+
+    res.json(todoItem);
+})
 
 // 라우트 끝 <---
 
