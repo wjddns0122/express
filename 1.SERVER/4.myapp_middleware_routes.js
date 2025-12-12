@@ -27,7 +27,7 @@ const myapp = {
         }
 
         // 미들웨어가 있으면, 미들웨어부터 처리한다
-        const context = { req, res, route };
+        const context = { req, res, route };        // const 키워드에서 키 값은 바꿀 수 없지만 value값은 바뀔 수 있다.
         const stack = [...this.middlewares, handler];   // 스프레드 연산 자료
         let index = 0;
 
