@@ -47,7 +47,7 @@ postContentBtn.addEventListener('click', () => {
 
     if (!content) {
         alert("내용을 입력해주세요!");
-        return; 
+        return;
     }
 
     fetch(baseUrl, {
@@ -56,24 +56,24 @@ postContentBtn.addEventListener('click', () => {
             'Content-type': 'application/json; charset=UTF-8',
         },
         body: JSON.stringify({
-            todo: content 
+            todo: content
         })
     })
-    .then((resp) => {
-        if (!resp.ok) {
-            throw new Error('네트워크 에러가 발생하였습니다.');
-        }
-        return resp.json();
-    })
-    .then((data) => {
-        console.log('생성된 데이터:', data);
-        postContent.value = ''; 
-        result.innerHTML = `${data.id}번째 todo리스트가 ${data.status}`;
-    })
-    .catch((err) => {
-        console.error(err);
-        alert('글 작성 중 에러가 발생했습니다.');
-    });
+        .then((resp) => {
+            if (!resp.ok) {
+                throw new Error('네트워크 에러가 발생하였습니다.');
+            }
+            return resp.json();
+        })
+        .then((data) => {
+            console.log('생성된 데이터:', data);
+            postContent.value = '';
+            result.innerHTML = `${data.id}번째 todo리스트가 ${data.status}`;
+        })
+        .catch((err) => {
+            console.error(err);
+            alert('글 작성 중 에러가 발생했습니다.');
+        });
 });
 
 // 내용 수정(PUT)
@@ -90,8 +90,8 @@ putContentNumberBtn.addEventListener('click', () => {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-            todo: putTodo 
+        body: JSON.stringify({
+            todo: putTodo
         }),
     })
         .then((resp) => {
@@ -99,14 +99,14 @@ putContentNumberBtn.addEventListener('click', () => {
                 throw new Error('네트워크 에러가 발생했습니다.');
             } return resp.json();
         })
-        .then((data) => { 
+        .then((data) => {
             result.innerHTML = `${data.id}번째 아이디가 ${data.todo} 내용으로 수정되었습니다!`;
-            
+
             putNumber.value = '';
             putContent.value = '';
         })
         .catch((err) => {
-            console.error(err); 
+            console.error(err);
             alert('문자 처리중 오류가 발생하였습니다.');
         });
 });
@@ -118,14 +118,14 @@ deleteNumberBtn.addEventListener('click', () => {
         method: 'DELETE'
     })
         .then((resp) => {
-            if(!resp.ok) {
+            if (!resp.ok) {
                 throw new Error('네트워크 에러가 발생하였습니다');
             }
             return resp.json();
         })
         .then(() => {
             deleteNumber.value = ''
-            result.innerHTML =`<p>${id}번 todo리스트가 삭제되었습니다!</p>`
+            result.innerHTML = `<p>${id}번 todo리스트가 삭제되었습니다!</p>`
         })
         .catch((err) => {
             alert('문자열 전송중 에러가 발생하였습니다', err)
@@ -136,9 +136,13 @@ deleteNumberBtn.addEventListener('click', () => {
 // 특정 ID 조회(GET)
 getIdBtn.addEventListener('click', () => {
     const id = getId.value;
+
+    if (!id) {
+        return alert("ID를 입력해주세요!");
+    }
     fetch(`${baseUrl}/${id}`)
         .then((resp) => {
-            if(!resp) {
+            if (!resp) {
                 throw new Error('네트워크 에러가 발생하였습니다.');
             }
             return resp.json();

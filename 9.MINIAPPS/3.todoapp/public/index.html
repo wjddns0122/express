@@ -1,32 +1,291 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TODO app(CRUD)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        input{
-            margin-top: 20px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .section {
+            background: #f8f9ff;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        input {
+            flex: 1;
+            min-width: 150px;
+            padding: 14px 18px;
+            border: 2px solid #e8ecf4;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+        }
+
+        input::placeholder {
+            color: #a0aec0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(17, 153, 142, 0.5);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.5);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(235, 51, 73, 0.4);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(235, 51, 73, 0.5);
+        }
+
+        .btn-all {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-all:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.5);
+        }
+
+        .result-section {
+            margin-top: 24px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 16px;
+            padding: 24px;
+            min-height: 120px;
+        }
+
+        .result-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #4facfe;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        #result {
+            list-style: none;
+            color: #e2e8f0;
+        }
+
+        #result li {
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 3px solid #4facfe;
+            transition: all 0.3s ease;
+        }
+
+        #result li:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateX(4px);
+        }
+
+        #result:empty::before {
+            content: '결과가 여기에 표시됩니다 ✨';
+            color: #64748b;
+            font-style: italic;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeIn 0.6s ease-out;
         }
     </style>
 </head>
+
 <body>
-    <h1>Todo List</h1>
-    <button id="allCheckBtn">전체 조회</button>
-    <br>
-    <input type="text" placeholder="생성할 내용을 입력하세요!" id="postContent">
-    <button id="postContentBtn">내용 생성!</button>
-    <br>
-    <input type="number" placeholder="수정할 id를 입력하세요!" id="putNumber">
-    <input type="text" placeholder="수정할 내용을 입력하세요!" id="putContent">
-    <button id="putContentNumberBtn">내용 수정</button>
-    <br>
-    <input type="number" placeholder="삭제할 id를 입력하세요!" id="deleteNumber">
-    <button id="deleteNumberBtn">원하는 리스트 삭제</button>
-    <br>
-    <input type="number" placeholder="조회할 id를 입력하세요" id="getId">
-    <button id="getIdBtn">ID 조회</button>
-    <ul id="result"></ul>
+    <div class="container">
+        <h1>📝 Todo List</h1>
+
+        <!-- 전체 조회 -->
+        <div class="section">
+            <div class="section-label">전체 목록 보기</div>
+            <button id="allCheckBtn" class="btn-all">🔍 전체 조회</button>
+        </div>
+
+        <!-- ID 조회 -->
+        <div class="section">
+            <div class="section-label">ID로 조회</div>
+            <div class="input-group">
+                <input type="number" placeholder="조회할 id를 입력하세요" id="getId">
+                <button id="getIdBtn" class="btn-primary">🔎 ID 조회</button>
+            </div>
+        </div>
+
+        <!-- 내용 생성 -->
+        <div class="section">
+            <div class="section-label">새 할일 추가</div>
+            <div class="input-group">
+                <input type="text" placeholder="생성할 내용을 입력하세요!" id="postContent">
+                <button id="postContentBtn" class="btn-secondary">✨ 내용 생성!</button>
+            </div>
+        </div>
+
+        <!-- 내용 수정 -->
+        <div class="section">
+            <div class="section-label">할일 수정</div>
+            <div class="input-group">
+                <input type="number" placeholder="수정할 id를 입력하세요!" id="putNumber">
+                <input type="text" placeholder="수정할 내용을 입력하세요!" id="putContent">
+                <button id="putContentNumberBtn" class="btn-warning">✏️ 내용 수정</button>
+            </div>
+        </div>
+
+        <!-- 삭제 -->
+        <div class="section">
+            <div class="section-label">할일 삭제</div>
+            <div class="input-group">
+                <input type="number" placeholder="삭제할 id를 입력하세요!" id="deleteNumber">
+                <button id="deleteNumberBtn" class="btn-danger">🗑️ 원하는 리스트 삭제</button>
+            </div>
+        </div>
+
+        <!-- 결과 표시 -->
+        <div class="result-section">
+            <div class="result-label">📋 결과</div>
+            <ul id="result"></ul>
+        </div>
+    </div>
+
     <script src="js/script.js"></script>
 </body>
+
 </html>
