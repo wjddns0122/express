@@ -1,0 +1,242 @@
+INSERT INTO employees VALUES(1, “홍길동”);
+INSERT INTO employees VALUES(2, “김길동”);
+INSERT INTO employees VALUES(3, “박길동”);
+
+INSERT INTO employees(name) VALUES(“이길동”);
+
+INSERT INTO employees(name) VALUES(“일론머스크”);
+
+.mode (list, line, column)
+.headers on
+.headers off
+
+CREATE TABLE people(
+	id INTEGER PRIMARY KEY, 
+	first_name TEXT,
+	last_name TEXT,
+	age INTEGER,
+	gender TEXT
+);
+
+INSERT INTO people VALUES(1, "first1", "last1", 21, "M");
+INSERT INTO people VALUES("first1", "last1", 21, "M");	// error
+
+INSERT INTO people (first_name, last_name, age, gender)VALUES("first1", "last1", 21, "M");
+
+INSERT INTO people (first_name, last_name, age, gender)VALUES("first2", "last2", 23, "M");
+
+INSERT INTO people (first_name, last_name, age, gender)VALUES("first3", "last3", 19, "M");
+
+INSERT INTO people (first_name, last_name, age, gender)VALUES("first4", "last4", 21, "M");
+
+INSERT INTO people(first_name, last_name) VALUES("first6", "last6");
+
+INSERT INTO people(first_name, age, gender) VALUES("first6", 33, "M");
+
+
+SELECT * FROM people;
+
+SELECT * FROM people WHERE gender="M";
+
+SELECT * FROM people WHERE gender="F";
+
+SELECT last_name || " " || first_name FROM people WHERE age=23;
+
+SELECT last_name || ' ' || first_name AS full_name FROM people WHERE age=23;
+
+SELECT * FROM people WHERE age BETWEEN 10 AND 19;
+
+DELETE FROM people WHERE first_name="first3";
+
+
+CREATE TABLE people(
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	first_name TEXT,
+	last_name TEXT,
+	age INTEGER,
+	gender TEXT
+);
+
+DELETE FROM people WHERE id=5;
+DELETE FROM people WHERE id=4;
+DELETE FROM people WHERE id=3;
+
+                     오름차순 ASC -> Ascending
+SELECT * FROM people ORDER BY age;
+
+                     내림차순 DESC -> Descending
+SELECT * FROM people ORDER BY age DESC;
+
+SELECT * FROM people ORDER BY first_name;
+SELECT * FROM people ORDER BY first_name DESC;
+
+SELECT * FROM people ORDER BY gender;
+SELECT * FROM people ORDER BY gender DESC;
+
+SELECT last_name || ' ' || first_name AS fullname, age, gender FROM people;
+                                                                             5명씩
+SELECT last_name || ' ' || first_name AS fullname, age, gender FROM people LIMIT 5; 
+                                                                                    건너뛰기
+SELECT last_name || ' ' || first_name AS fullname, age, gender FROM people LIMIT 5 OFFSET 10;
+
+
+CRM ex)
+
+
+ORDER clause
+
+SELECT * FROM users LIMIT 20 OFFSET 0;
+SELECT * FROM users LIMIT 20 OFFSET 20;
+SELECT * FROM users LIMIT 20 OFFSET 40;
+
+SELECT name, gender, age, birthday FROM users LIMIT 20;
+
+20대의 사람들만 골라서, 나이순으로 정렬하세요
+SELECT * FROM people 
+WHERE age BETWEEN 20 AND 29 
+ORDER BY age;
+
+SELECT * FROM people
+WHERE age IN (22, 27, 29)
+ORDER BY age;
+
+'박'씨 찾기
+SELECT * FROM people WHERE last_name='박';
+
+이름어디든지 '서'가 들어간 사람 찾기
+SELECT * FROM people WHERE first_name LIKE '서%';
+SELECT * FROM people WHERE first_name LIKE '%서';
+SELECT * FROM people WHERE first_name LIKE '%서%';
+
+
+DELETE FROM people WHERE first_name LIKE '%서';
+
+
+대ㅐㅐㅐㅐㅐㅐㅐㅐㅐ충
+하나의 테이블로 CRUD를 대ㅐㅐㅐㅐㅐㅐ충 배움 ㅎㅎㅋ ㅋㅋㅋ ㅋ ㅋ ㅋ ㅋ ㅋ 
+
+
+우리 소라 개명 한번 하자 -> 하은이로 개명 한번 하자
+13|소라|이|28|여
+UPDATE people SET first_name='하은' WHERE first_name='소라';
+
+여자로 되있는거 다 M으로 바꾸자
+UPDATE people SET gender="M" WHERE gender="여";
+
+처음으로 다시 시작
+
+CREATE TABLE employee (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    dept_id INTEGER
+);
+
+INSERT INTO employee VALUES(1, "user1", 1);
+INSERT INTO employee VALUES(2, "user2", 3);
+INSERT INTO employee(name, dept_id) VALUES("user3", 1);
+INSERT INTO employee(name, dept_id) VALUES("user4", 2);
+INSERT INTO employee(name, dept_id) VALUES("user5", 2);
+
+CREATE TABLE dept(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    location TEXT
+);
+
+INSERT INTO dept VALUES(1, "영업팀", "서울");
+INSERT INTO dept VALUES(2, "개발팀", "판교");
+INSERT INTO dept VALUES(3, "인사팀", "집");
+
+두개의 테이블을 합치는 과정을 .. JOIN
+
+교집합 찾기
+SELECT employee.id, employee.name, dept.name, dept.location 
+FROM employee
+INNER JOIN dept 
+ON employee.dept_id = dept_id;
+
+SELECT e.id, e.name, d.name, d.location 
+FROM employee e
+INNER JOIN dept d  
+ON e.dept_id = d.id;
+
+CREATE TABLE product (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT, 
+    num INTEGER,
+    price INTEGER,
+    discount INTEGER
+);
+
+INSERT INTO product(name, num, price, discount) VALUES("마우스", 7, 2500, 0);
+INSERT INTO product(name, num, price, discount) VALUES("노트북", 2, 65000, 0);
+INSERT INTO product(name, num, price, discount) VALUES("모니터", 4, 35000, 0);
+INSERT INTO product(name, num, price, discount) VALUES("프린터", 5, 8000, 2000);
+INSERT INTO product(name, num, price, discount) VALUES("키보드", 4, 15000, 0);
+
+UPDATE product SET discount=10000 WHERE name="노트북";
+
+SELECT COUNT(*) FROM product;
+
+SELECT * FROM product LIMIT 10;
+
+SELECT name, num, price, num * price FROM product;
+
+SELECT name, num, price, num * price AS totalPrice FROM product;
+
+SELECT *, price - discount FROM product;
+SELECT *, price - discount AS salesPrice FROM product;
+
+SELECT name, price, 
+CASE 
+    WHEN price > 50000 THEN "비쌈"
+    WHEN price > 10000 THEN "보통"
+    ELSE "쌈"
+END AS comment
+FROM product;
+
+거기에 종류만 보여줌
+SELECT DISTINCT name FROM people;
+SELECT DISTINCT age FROM people;
+SELECT DISTINCT gender FROM people;
+
+SELECT SUM(price) FROM product;
+SELECT AVG(price) FROM product;
+
+
+====================== GROUB BY ======================
+
+그룹핑..
+
+-- 스토어(매장) 테이블
+CREATE TABLE stores (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  store_name TEXT NOT NULL,
+  region TEXT NOT NULL,      -- 서울/부산/대구/인천
+  category TEXT NOT NULL,    -- 업종(커피/편의점/베이커리 등)
+  monthly_sales INTEGER NOT NULL, -- 월매출(만원 단위 같은 걸로 가정)
+  staff_count INTEGER NOT NULL
+);
+
+-- 랜덤 샘플 데이터 10개 (지역: 서울, 부산, 대구, 인천)
+INSERT INTO stores (store_name, region, category, monthly_sales, staff_count) VALUES
+('한강커피 1호점', '서울', '카페', 4200, 6),
+('서면마켓',     '부산', '편의점', 3100, 4),
+('동성로빵집',   '대구', '베이커리', 2800, 5),
+('송도커피',     '인천', '카페', 3600, 5),
+('강남마트',     '서울', '마트', 5400, 8),
+('해운대치킨',   '부산', '치킨', 4700, 7),
+('수성분식',     '대구', '분식', 1900, 3),
+('부평라면',     '인천', '분식', 2100, 3),
+('홍대편의점',   '서울', '편의점', 3300, 4),
+('광안리카페',   '부산', '카페', 3900, 6);
+
+-- 예시: 지역별 매장 수/평균매출/총매출
+SELECT
+  region,
+  COUNT(*) AS store_cnt,
+  AVG(monthly_sales) AS avg_sales,
+  SUM(monthly_sales) AS total_sales
+FROM stores
+GROUP BY region
+ORDER BY total_sales DESC;
